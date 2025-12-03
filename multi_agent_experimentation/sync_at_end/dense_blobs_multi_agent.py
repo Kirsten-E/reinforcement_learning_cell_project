@@ -41,9 +41,9 @@ class Agent():
     
     def __init__(self, rows, columns, id):
         self.id = id
-        with open(f"multi_agent_experimentation/dense_blobs/exploratory_value_function_{self.id}.json", 'r+') as file:
+        with open(f"multi_agent_experimentation/sync_at_end/exploratory_value_function_{self.id}.json", 'r+') as file:
             self.exploratory_value_function = json.load(file)
-        with open(f"multi_agent_experimentation/dense_blobs/feature_value_function_{self.id}.json", 'r+') as file:
+        with open(f"multi_agent_experimentation/sync_at_end/feature_value_function_{self.id}.json", 'r+') as file:
             self.feature_value_function = json.load(file)
         self.exploratory_param = 0.1
         self.exploratory_step_size = 0.1
@@ -106,12 +106,12 @@ class Agent():
         # Update final state
         self.exploratory_value_function[last_state_action] = explored_elements
         # Write results
-        file = open(f"multi_agent_experimentation/dense_blobs/results_{self.id}.txt", 'a+')
+        file = open(f"multi_agent_experimentation/sync_at_end/results_{self.id}.txt", 'a+')
         file.write(f"{iteration}: {explored_elements}\n")
         file.close()
         # print(iteration)
-        print(self.board_of_exploration)
-        print(self.board_of_guesses)
+        # print(self.board_of_exploration)
+        # print(self.board_of_guesses)
         # print(explored_elements)
 
 
@@ -150,31 +150,26 @@ class Agent():
 
 
     def save_value_function(self):
-        with open(f"multi_agent_experimentation/dense_blobs/exploratory_value_function_{self.id}.json", "w+") as file:
+        with open(f"multi_agent_experimentation/sync_at_end/exploratory_value_function_{self.id}.json", "w+") as file:
             json.dump({str(k): v for k, v in self.exploratory_value_function.items()}, file, indent=2)
-        with open(f"multi_agent_experimentation/dense_blobs/feature_value_function_{self.id}.json", "w+") as file:
+        with open(f"multi_agent_experimentation/sync_at_end/feature_value_function_{self.id}.json", "w+") as file:
             json.dump({str(k): v for k, v in self.feature_value_function.items()}, file, indent=2)
 
 def train(agent, image):
-    for i in range(0, 10000):
+    for i in range(0, 100000):
         agent.explore_image(image, i)
-        print(agent.id)
+        # print(agent.id)
     agent.save_value_function()
-    # plt.plot(range(0,10000), agent.results)
-    # plt.title(f"Figure {agent.id}")
-    # plt.show()
 
 
 
 if __name__ == '__main__':
     image_1 = Image(5, 5, 20)
-    image_2 = Image(5, 5, 20)
-    image_2.board = image_1.board
     agent_1 = Agent(5, 5, "1")
     agent_2 = Agent(5, 5, "2")
 
     p1 = multiprocessing.Process(target=train, args=(agent_1, image_1))
-    p2 = multiprocessing.Process(target=train, args=(agent_2, image_2))
+    p2 = multiprocessing.Process(target=train, args=(agent_2, image_1))
 
     p1.start()
     p2.start()
@@ -186,6 +181,9 @@ if __name__ == '__main__':
 
     print(image_1.board)
     agent_1.explore_image(image_1, 101)
-    agent_2.explore_image(image_2, 101)
+    print(agent_1.board_of_guesses)
+    agent_2.explore_image(image_1, 101)
+    print(agent_2.board_of_guesses)
+
 
     print(np.minimum(agent_1.board_of_guesses, agent_2.board_of_guesses))

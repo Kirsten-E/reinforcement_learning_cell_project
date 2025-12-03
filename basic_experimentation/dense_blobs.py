@@ -40,9 +40,9 @@ class Agent():
 
     
     def __init__(self, rows, columns):
-        with open("basic_experimentation/dense_blobs/exploratory_value_function.json", 'r') as file:
+        with open("basic_experimentation/exploratory_value_function.json", 'r') as file:
             self.exploratory_value_function = json.load(file)
-        with open("basic_experimentation/dense_blobs/feature_value_function.json", 'r') as file:
+        with open("basic_experimentation/feature_value_function.json", 'r') as file:
             self.feature_value_function = json.load(file)
         self.exploratory_param = 0.1
         self.exploratory_step_size = 0.1
@@ -83,7 +83,7 @@ class Agent():
                 last_state_action_value = current_action_value
         explored_elements = -1 * np.sum(square(image.board - self.explored_board))
         self.exploratory_value_function[last_state_action] = explored_elements
-        file = open("basic_experimentation/dense_blobs/results.txt", 'a')
+        file = open("basic_experimentation/results.txt", 'a')
         file.write(f"{iteration}: {explored_elements}\n")
         file.close()
         self.results.append(explored_elements)
@@ -129,9 +129,9 @@ class Agent():
 
 
     def save_value_function(self):
-        with open("basic_experimentation/dense_blobs/exploratory_value_function.json", "w") as file:
+        with open("basic_experimentation/exploratory_value_function.json", "w") as file:
             json.dump({str(k): v for k, v in self.exploratory_value_function.items()}, file, indent=2)
-        with open("basic_experimentation/dense_blobs/feature_value_function.json", "w") as file:
+        with open("basic_experimentation/feature_value_function.json", "w") as file:
             json.dump({str(k): v for k, v in self.feature_value_function.items()}, file, indent=2)
 
 
